@@ -6,10 +6,11 @@ export async function saveUser(
   userData: any,
   salt: string,
   hashedPassword: string
-): Promise<any> {
-  const connection = getConnection();
-  const user = await connection.getRepository(User).insert({
-    id: uuid(),
+): Promise<User> {
+  const userRepo = getConnection().getRepository(User);
+  const generatedId = uuid();
+  const status = await userRepo.insert({
+    id: generatedId,
     username: userData.username,
     passwordHash: hashedPassword,
     salt: salt,
@@ -21,6 +22,7 @@ export async function saveUser(
     currency: userData.currency,
   });
 
+  const user = await userRepo.findOneOrFail({ id: generatedId });
   return user;
 }
 

@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
 import { createConnection } from "typeorm";
@@ -46,6 +47,7 @@ export default class App {
   private initializeMiddlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
     this.app.use(helmet());
     this.app.use(cors({ origin: "http://localhost:*" }));
   }
