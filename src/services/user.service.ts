@@ -9,7 +9,7 @@ export async function saveUser(
 ): Promise<User> {
   const userRepo = getConnection().getRepository(User);
   const generatedId = uuid();
-  const status = await userRepo.insert({
+  const status = await userRepo.save({
     id: generatedId,
     username: userData.username,
     passwordHash: hashedPassword,
@@ -22,8 +22,7 @@ export async function saveUser(
     currency: userData.currency,
   });
 
-  const user = await userRepo.findOneOrFail({ id: generatedId });
-  return user;
+  return status;
 }
 
 export async function getUser(userData: any): Promise<User | undefined> {
@@ -33,4 +32,9 @@ export async function getUser(userData: any): Promise<User | undefined> {
     .findOneOrFail({ username: userData.username });
 
   return user;
+}
+
+export async function updateUser(userData: User): Promise<User> {
+  const userRepo = getConnection().getRepository(User);
+  return await userRepo.save(userData);
 }

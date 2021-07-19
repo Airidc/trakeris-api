@@ -1,10 +1,5 @@
 import * as express from "express";
-import { User } from "../entity/user.entity";
 import IBasicController from "../interface/BasicController";
-import { TokenData, UserDataInToken } from "../interface/TokenData";
-import * as jwt from "jsonwebtoken";
-// import * as authService from "../services/auth.service";
-// import * as userService from "../services/user.service";
 import { authService, userService } from "../services";
 
 export default class AuthenticationController implements IBasicController {
@@ -31,8 +26,8 @@ export default class AuthenticationController implements IBasicController {
     );
 
     const user = await userService.saveUser(userData, salt, hashedPassword);
-    const tokenData = this.createToken(user);
-    response.setHeader("Set-Cookie", [this.createCookie(tokenData)]);
+    const tokenData = await authService.createToken(user);
+    response.setHeader("Set-Cookie", [authService.createCookie(tokenData)]);
     response.send(user);
   };
 
@@ -43,11 +38,13 @@ export default class AuthenticationController implements IBasicController {
     const userData: any = request.body;
     let user = await userService.getUser(userData);
 
-    if (user?.checkIfPasswordsMatch(userData.password)) {
-      return response.json({ status: "login successful" });
+    if (!!!user?.checkIfPasswordsMatch(userData.password)) {
+      return response.json({ status: "login failed" });
     }
 
-    return response.json({ status: "login failed" });
+    const tokenData = await authService.createToken(user);
+    response.setHeader("Set-Cookie", [authService.createCookie(tokenData)]);
+    return response.json({ status: "login successful" });
   };
 
   private logout = async (
@@ -57,29 +54,12 @@ export default class AuthenticationController implements IBasicController {
     response.json({ status: "ok" });
   };
 
-  private createToken(user: User): TokenData {
-    const expiresIn = 60 * 60; // an hour
-    const secret = process.env.JWT_SECRET as string;
-    const dataStoredInToken: UserDataInToken = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      profilePic: user.profilePicPath,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    };
-
-    return {
-      expiresIn,
-      token: jwt.sign(dataStoredInToken, secret, {
-        expiresIn,
-      }),
-    };
-  }
-
-  private createCookie(tokenData: TokenData) {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
-  }
+  private refreshToken = async (
+    request: express.Request,
+    response: express.Response
+  ) => {
+    const refreshToken = authService.createRefreshToken();
+  };
 }
 
 // export async function registration(

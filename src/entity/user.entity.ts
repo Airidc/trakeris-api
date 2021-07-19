@@ -53,6 +53,12 @@ export class User {
   @Column()
   currency!: string;
 
+  @Column()
+  refreshToken!: string;
+
+  @Column()
+  refreshTokenExpiry!: number;
+
   checkIfPasswordsMatch(submittedPassword: string): boolean {
     return bcrypt.compareSync(submittedPassword, this.passwordHash);
   }

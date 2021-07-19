@@ -1,6 +1,8 @@
 interface TokenData {
-  token: string;
-  expiresIn: number;
+  accessToken: string;
+  accessExpiresIn: number;
+  refreshToken: string;
+  refreshExpiresIn: number;
 }
 
 interface UserDataInToken {
