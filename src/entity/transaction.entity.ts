@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
+import { TransactionCategory } from "./transactionCategory.entity";
 import { User } from "./user.entity";
 
 @Entity()
@@ -18,9 +19,17 @@ export class Transaction {
   @Column()
   label!: string;
 
-  //   @Column()
-  //   userId!: string;
-  //   @ManyToOne((_type) => User, (user: User) => user.transactions)
-  //   @JoinColumn()
-  //   user!: User;
+  @ManyToOne((_type) => TransactionCategory, (tc: TransactionCategory) => tc.id)
+  @JoinColumn()
+  category!: TransactionCategory;
+
+  @Column()
+  comment!: string;
+
+  @Column()
+  type!: "expense" | "income";
+
+  @ManyToOne((_type) => User, (user: User) => user.id)
+  @JoinColumn()
+  user!: User;
 }

@@ -1,5 +1,10 @@
 import * as express from "express";
+import { Transaction } from "../entity/transaction.entity";
 import IBasicController from "../interface/BasicController";
+import { v4 as uuidv4 } from "uuid";
+import { getConnection } from "typeorm";
+import { User } from "../entity/user.entity";
+import { TransactionCategory } from "../entity/transactionCategory.entity";
 
 export default class TransactionController implements IBasicController {
   public path = "/transaction";
@@ -19,7 +24,30 @@ export default class TransactionController implements IBasicController {
     request: express.Request,
     response: express.Response
   ) => {
-    return response.json({ status: "add successful" });
+    const rb = request.body;
+
+    const user = new User();
+    user.id = rb.userId;
+    const tc = new TransactionCategory();
+    tc.id = rb.categoryId;
+
+    const transaction: Transaction = {
+      id: uuidv4(),
+      amount: rb.amount,
+      currency: rb.currency,
+      label: rb.label,
+      createdAt: Date.now().toString(),
+      user: user,
+      category: tc,
+      comment: rb.comment,
+      type: rb.type,
+    };
+
+    //await transactionService.saveTransaction(transaction);
+    const connection = getConnection();
+    const trns = await connection.getRepository(Transaction).save(transaction);
+
+    return response.json({ ...trns });
   };
 
   private deleteTransaction = async (
@@ -33,6 +61,11 @@ export default class TransactionController implements IBasicController {
     request: express.Request,
     response: express.Response
   ) => {
-    return response.json({ status: "get successful" });
+    const rb = request.body;
+    const connection = getConnection();
+    const trns = await connection
+      .getRepository(Transaction)
+      .find({ where: { user: rb.userId } });
+    return response.json({ transactions: trns });
   };
 }
