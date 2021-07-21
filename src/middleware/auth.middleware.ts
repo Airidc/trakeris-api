@@ -1,5 +1,6 @@
 import express from "express";
 import * as jwt from "jsonwebtoken";
+import { userService } from "../services";
 
 export default function verifyUser(
   req: express.Request,
@@ -11,7 +12,7 @@ export default function verifyUser(
     return res.status(401).send("Access Denied / Unauthorized request");
 
   try {
-    token = token.split(" ")[1]; // Remove Bearer from string
+    token = token.split(" ")[1];
 
     if (token === "null" || !token)
       return res.status(401).send("Unauthorized request");
@@ -24,4 +25,15 @@ export default function verifyUser(
   } catch (error) {
     res.status(400).send("Invalid Token");
   }
+}
+
+export function checkDuplicateUser(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const userName = req.body.username;
+  const email = req.body.email;
+
+  // const user = userService.getUserBy(userName, email);
 }

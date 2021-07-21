@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { getConnection } from "typeorm";
 import { User } from "../entity/user.entity";
+import { UserFields } from "../enums/userFields.enum";
 
 export async function saveUser(
   userData: any,
@@ -25,11 +26,37 @@ export async function saveUser(
   return status;
 }
 
-export async function getUser(userData: any): Promise<User | undefined> {
+export async function getUserBy(
+  fieldName: UserFields,
+  value: string
+): Promise<User | undefined> {
   const connection = getConnection();
+  const searchCriteria = {
+    where: {},
+  };
+
+  switch (fieldName) {
+    case UserFields.Username: {
+      searchCriteria.where = { username: value };
+      break;
+    }
+    case UserFields.Email: {
+      searchCriteria.where = { email: value };
+      break;
+    }
+    case UserFields.Id: {
+      searchCriteria.where = { id: value };
+      break;
+    }
+    default: {
+      searchCriteria.where = { username: value };
+      break;
+    }
+  }
+
   const user = await connection
     .getRepository(User)
-    .findOneOrFail({ username: userData.username });
+    .findOneOrFail(searchCriteria);
 
   return user;
 }
