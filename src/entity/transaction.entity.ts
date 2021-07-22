@@ -26,9 +26,6 @@ export class Transaction {
   @Column()
   comment!: string;
 
-  @Column()
-  type!: "expense" | "income";
-
   @ManyToOne((_type) => User, (user: User) => user.id)
   @JoinColumn()
   user!: User;

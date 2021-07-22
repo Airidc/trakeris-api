@@ -2,8 +2,8 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
 import { createConnection } from "typeorm";
-import { entities } from "./entity";
-import BasicController from "./interface/BasicController";
+import { Transaction, TransactionCategory, User } from "./entity";
+import { BasicController } from "./interface";
 import errorMiddleware from "./middleware/error.middleware";
 
 var cors = require("cors");
@@ -32,7 +32,7 @@ export default class App {
         name: "default",
         type: "mysql",
         host: "localhost",
-        entities: entities,
+        entities: [User, TransactionCategory, Transaction],
         port: 3306,
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASS,
@@ -69,9 +69,3 @@ export default class App {
     }
   }
 }
-
-// // --- API Routes
-// app.use("/api/user", userRouter);
-// app.use("/api/auth", authRouter);
-// app.use("/api/investment", investmentRouter);
-// // --- End Of API Routes

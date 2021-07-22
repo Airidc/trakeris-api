@@ -1,9 +1,10 @@
 import * as express from "express";
 import { UserFields } from "../enums/userFields.enum";
-import IBasicController from "../interface/BasicController";
+import { BasicController } from "../interface";
+import { checkDuplicateUser, verifyUser } from "../middleware/auth.middleware";
 import { authService, userService } from "../services";
 
-export default class AuthenticationController implements IBasicController {
+export default class AuthenticationController implements BasicController {
   public path = "/auth";
   public router = express.Router();
 
@@ -12,8 +13,12 @@ export default class AuthenticationController implements IBasicController {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/register`, this.register);
-    this.router.post(`${this.path}/login`, this.login);
+    this.router.post(
+      `${this.path}/register`,
+      checkDuplicateUser,
+      this.register
+    );
+    this.router.post(`${this.path}/login`, verifyUser, this.login);
     this.router.post(`${this.path}/logout`, this.logout);
     this.router.get(`${this.path}/refresh_token`, this.refreshToken);
   }
@@ -64,29 +69,7 @@ export default class AuthenticationController implements IBasicController {
     response: express.Response
   ) => {
     const refreshToken = authService.createRefreshToken();
+
+    //TODO: Finish refresh token implementation L8HVUJ80AE3VO7RG
   };
 }
-
-// export async function registration(
-//   request: express.Request,
-//   response: express.Response,
-//   next: express.NextFunction
-// ) {
-//   const userData: any = request.body;
-//   var salt = bcrypt.genSaltSync(10);
-//   var hashedPassword = await bcrypt.hash(userData.password, salt);
-
-//   const connection = getConnection();
-//   const user = await connection.getRepository(User).insert({
-//     id: uuid(),
-//     passwordHash: hashedPassword,
-//     salt: salt,
-//     email: userData.email,
-//     createdAt: Date.now() + "",
-//     userRole: "user",
-//     firstName: "Airidas",
-//     lastName: "Venskus",
-//   });
-
-//   response.send(user);
-// }

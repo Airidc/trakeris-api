@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-export default interface BasicController {
+export interface BasicController {
   path: string;
   router: Router;
 }

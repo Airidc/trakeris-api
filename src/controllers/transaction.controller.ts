@@ -1,12 +1,11 @@
 import * as express from "express";
 import { Transaction } from "../entity/transaction.entity";
-import IBasicController from "../interface/BasicController";
-import { v4 as uuidv4 } from "uuid";
 import { getConnection } from "typeorm";
-import { User } from "../entity/user.entity";
-import { TransactionCategory } from "../entity/transactionCategory.entity";
+import { TransactionCategoryDTO, TransactionDTO } from "../interface/DTO";
+import { dtoService, transactionService } from "../services";
+import { BasicController } from "../interface";
 
-export default class TransactionController implements IBasicController {
+export default class TransactionController implements BasicController {
   public path = "/transaction";
   public router = express.Router();
 
@@ -18,36 +17,38 @@ export default class TransactionController implements IBasicController {
     this.router.post(`${this.path}/add`, this.addTransaction);
     this.router.delete(`${this.path}/delete`, this.deleteTransaction);
     this.router.post(`${this.path}/getAll`, this.getTransactions);
+    this.router.post(`${this.path}/category/add`, this.addTransactionCategory);
   }
+
+  private addTransactionCategory = async (
+    request: express.Request,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    const transactionCategoryDTO = <TransactionCategoryDTO>request.body;
+
+    const tc = await transactionService.saveTransactionCategory(
+      transactionCategoryDTO
+    );
+
+    return response.json({ ...dtoService.transactionCategoryToDTO(tc) });
+  };
 
   private addTransaction = async (
     request: express.Request,
-    response: express.Response
+    response: express.Response,
+    next: express.NextFunction
   ) => {
-    const rb = request.body;
+    const transactionDTO = <TransactionDTO>request.body;
 
-    const user = new User();
-    user.id = rb.userId;
-    const tc = new TransactionCategory();
-    tc.id = rb.categoryId;
+    let transaction;
+    try {
+      transaction = await transactionService.saveTransaction(transactionDTO);
+    } catch (error) {
+      return next(error);
+    }
 
-    const transaction: Transaction = {
-      id: uuidv4(),
-      amount: rb.amount,
-      currency: rb.currency,
-      label: rb.label,
-      createdAt: Date.now().toString(),
-      user: user,
-      category: tc,
-      comment: rb.comment,
-      type: rb.type,
-    };
-
-    //await transactionService.saveTransaction(transaction);
-    const connection = getConnection();
-    const trns = await connection.getRepository(Transaction).save(transaction);
-
-    return response.json({ ...trns });
+    return response.json({ ...dtoService.transactionToDTO(transaction) });
   };
 
   private deleteTransaction = async (

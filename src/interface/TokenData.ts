@@ -1,11 +1,11 @@
-interface TokenData {
+export interface TokenData {
   accessToken: string;
   accessExpiresIn: number;
   refreshToken: string;
   refreshExpiresIn: number;
 }
 
-interface UserDataInToken {
+export interface UserDataInToken {
   id: string;
   username: string;
   email: string;
@@ -13,5 +13,3 @@ interface UserDataInToken {
   firstName: string;
   lastName: string;
 }
-
-export { TokenData, UserDataInToken };
