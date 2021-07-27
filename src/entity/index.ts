@@ -6,3 +6,4 @@
 export * from "./user.entity";
 export * from "./transaction.entity";
 export * from "./transactionCategory.entity";
+export * from "./vault.entity";

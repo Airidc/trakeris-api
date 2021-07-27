@@ -1,5 +1,8 @@
 import express from "express";
+import { getConnection } from "typeorm";
+import { Vault } from "../entity";
 import { BasicController, TransactionDTO, VaultDTO } from "../interface";
+import { dtoService } from "../services";
 
 export class VaultController implements BasicController {
   public path = "/vault";
@@ -18,8 +21,13 @@ export class VaultController implements BasicController {
     request: express.Request,
     response: express.Response
   ) => {
-    const newVault = <VaultDTO>request.body;
-    return response.json({ status: "OK" });
+    const dtoVault = <VaultDTO>request.body;
+
+    const vault = dtoService.vaultDTOtoVault(dtoVault);
+
+    const x = await getConnection().getRepository(Vault).save(vault);
+
+    return response.json({ vault: x });
   };
 
   private addVaultTransaction = async (

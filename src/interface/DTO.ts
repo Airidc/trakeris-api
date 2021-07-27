@@ -60,4 +60,6 @@ export interface VaultDTO {
   periodicAmount: number;
   targetAmount: number;
   currency: string;
+  periodicInterval: string;
+  nextPeriodicTopup?: number;
 }
