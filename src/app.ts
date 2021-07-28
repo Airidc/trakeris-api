@@ -3,6 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import { createConnection } from "typeorm";
 import { Transaction, TransactionCategory, User, Vault } from "./entity";
+import { VaultTransaction } from "./entity/vaultTransaction.entity";
 import { BasicController } from "./interface";
 import errorMiddleware from "./middleware/error.middleware";
 
@@ -32,7 +33,16 @@ export default class App {
         name: "default",
         type: "mysql",
         host: "localhost",
-        entities: [User, TransactionCategory, Transaction, Vault],
+        extra: {
+          decimalNumbers: true,
+        },
+        entities: [
+          User,
+          TransactionCategory,
+          Transaction,
+          Vault,
+          VaultTransaction,
+        ],
         port: 3306,
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASS,

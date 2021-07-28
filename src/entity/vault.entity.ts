@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
-import { TransactionCategory } from "./transactionCategory.entity";
 import { User } from "./user.entity";
 
 @Entity()

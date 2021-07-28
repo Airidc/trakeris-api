@@ -63,3 +63,11 @@ export interface VaultDTO {
   periodicInterval: string;
   nextPeriodicTopup?: number;
 }
+
+export interface VaultTransactionDTO {
+  id?: string;
+  vaultId: string;
+  amount: number;
+  currency: string;
+  createdAt?: string;
+}

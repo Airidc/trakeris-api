@@ -5,9 +5,11 @@ import {
   TransactionCategoryDTO,
   TransactionDTO,
   VaultDTO,
+  VaultTransactionDTO,
 } from "../interface/DTO";
 import { v4 as uuidv4 } from "uuid";
 import { getConnection } from "typeorm";
+import { VaultTransaction } from "../entity/vaultTransaction.entity";
 
 export function transactionToDTO(t: Transaction): TransactionDTO {
   return <TransactionDTO>{
@@ -49,5 +51,19 @@ export function vaultDTOtoVault(dto: VaultDTO): Vault {
     userId: dto.userId,
     periodicInterval: dto.periodicInterval,
     nextPeriodicTopup: dto.nextPeriodicTopup,
+  };
+}
+
+export function vaultTxDTOtoVaultTx(
+  dto: VaultTransactionDTO
+): VaultTransaction {
+  if (!dto.id) dto.id = uuidv4();
+
+  return <VaultTransaction>{
+    id: dto.id,
+    vaultId: dto.vaultId,
+    amount: dto.amount,
+    currency: dto.currency,
+    createdAt: Date.now() + "",
   };
 }
