@@ -9,7 +9,7 @@ const app = new App(
     new TransactionController(),
     new VaultController(),
   ],
-  3000
+  3001
 );
 
 app.listen();

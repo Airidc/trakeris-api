@@ -4,12 +4,27 @@ import { Vault } from "../entity/vault.entity";
 import {
   TransactionCategoryDTO,
   TransactionDTO,
+  UserDTO,
   VaultDTO,
   VaultTransactionDTO,
 } from "../interface/DTO";
 import { v4 as uuidv4 } from "uuid";
-import { getConnection } from "typeorm";
 import { VaultTransaction } from "../entity/vaultTransaction.entity";
+import { User } from "../entity";
+
+export function userToDTO(user: User): UserDTO {
+  return <UserDTO>{
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    createdAt: user.createdAt,
+    userRole: user.userRole,
+    profilePicPath: user.profilePicPath,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    currency: user.currency,
+  };
+}
 
 export function transactionToDTO(t: Transaction): TransactionDTO {
   return <TransactionDTO>{

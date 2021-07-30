@@ -3,7 +3,8 @@ import { TokenData, UserDataInToken } from "../interface/TokenData";
 import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
 import { User } from "../entity/user.entity";
-import { userService } from ".";
+import { dtoService, userService } from ".";
+import { UserDTO } from "../interface";
 
 export async function hashPassword(password: string) {
   var salt = bcrypt.genSaltSync(10);
@@ -27,14 +28,9 @@ export async function createToken(user: User): Promise<TokenData> {
     await userService.updateUser(user);
   }
 
-  const dataStoredInToken: UserDataInToken = {
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    profilePic: user.profilePicPath,
-    firstName: user.firstName,
-    lastName: user.lastName,
-  };
+  const dataStoredInToken = dtoService.userToDTO(user);
+  dataStoredInToken.refreshToken = user.refreshToken;
+  dataStoredInToken.refreshTokenExpiry = user.refreshTokenExpiry;
 
   return {
     accessExpiresIn,

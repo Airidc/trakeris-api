@@ -2,7 +2,7 @@ import * as express from "express";
 import { UserFields } from "../enums/userFields.enum";
 import { BasicController } from "../interface";
 import { checkDuplicateUser, verifyUser } from "../middleware/auth.middleware";
-import { authService, userService } from "../services";
+import { authService, dtoService, userService } from "../services";
 
 export default class AuthenticationController implements BasicController {
   public path = "/auth";
@@ -18,7 +18,7 @@ export default class AuthenticationController implements BasicController {
       checkDuplicateUser,
       this.register
     );
-    this.router.post(`${this.path}/login`, verifyUser, this.login);
+    this.router.post(`${this.path}/login`, this.login);
     this.router.post(`${this.path}/logout`, this.logout);
     this.router.get(`${this.path}/refresh_token`, this.refreshToken);
   }
@@ -52,9 +52,10 @@ export default class AuthenticationController implements BasicController {
       return response.json({ status: "login failed" });
     }
 
+    // const userDTO = dtoService.userToDTO(user);
     const tokenData = await authService.createToken(user);
     response.setHeader("Set-Cookie", [authService.createCookie(tokenData)]);
-    return response.json({ status: "login successful", user });
+    return response.json({ status: "login successful" });
   };
 
   private logout = async (

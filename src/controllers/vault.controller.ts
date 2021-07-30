@@ -1,10 +1,7 @@
 import express from "express";
-import { getConnection } from "typeorm";
-import { Vault } from "../entity";
-import { VaultTransaction } from "../entity/vaultTransaction.entity";
 import HttpException from "../exceptions/http.exception";
 import { BasicController, VaultDTO, VaultTransactionDTO } from "../interface";
-import { dtoService, vaultService } from "../services";
+import { vaultService } from "../services";
 
 export class VaultController implements BasicController {
   public path = "/vault";
