@@ -59,7 +59,7 @@ export default class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
     this.app.use(helmet());
-    this.app.use(cors({ origin: "http://localhost:*" }));
+    this.app.use(cors({ origin: "*" }));
   }
 
   private initializeControllers(controllers: BasicController[]) {

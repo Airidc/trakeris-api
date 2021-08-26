@@ -1,19 +1,13 @@
 import { Transaction } from "../entity/transaction.entity";
 import { TransactionCategory } from "../entity/transactionCategory.entity";
 import { Vault } from "../entity/vault.entity";
-import {
-  TransactionCategoryDTO,
-  TransactionDTO,
-  UserDTO,
-  VaultDTO,
-  VaultTransactionDTO,
-} from "../interface/DTO";
+import { TransactionCategoryDTO, TransactionDTO, UserDTO, VaultDTO, VaultTransactionDTO } from "../interface/DTO";
 import { v4 as uuidv4 } from "uuid";
 import { VaultTransaction } from "../entity/vaultTransaction.entity";
 import { User } from "../entity";
 
-export function userToDTO(user: User): UserDTO {
-  return <UserDTO>{
+export function userToDTO(user: User, refreshToken?: string, refreshTokenExpiry?: number): UserDTO {
+  let userDTO = <UserDTO>{
     id: user.id,
     username: user.username,
     email: user.email,
@@ -24,6 +18,11 @@ export function userToDTO(user: User): UserDTO {
     lastName: user.lastName,
     currency: user.currency,
   };
+
+  if (refreshToken) userDTO.refreshToken = refreshToken;
+  if (refreshTokenExpiry) userDTO.refreshTokenExpiry = refreshTokenExpiry;
+
+  return userDTO;
 }
 
 export function transactionToDTO(t: Transaction): TransactionDTO {
@@ -39,9 +38,7 @@ export function transactionToDTO(t: Transaction): TransactionDTO {
   };
 }
 
-export function transactionCategoryToDTO(
-  tc: TransactionCategory
-): TransactionCategoryDTO {
+export function transactionCategoryToDTO(tc: TransactionCategory): TransactionCategoryDTO {
   return <TransactionCategoryDTO>{
     id: tc.id,
     name: tc.name,
@@ -69,9 +66,7 @@ export function vaultDTOtoVault(dto: VaultDTO): Vault {
   };
 }
 
-export function vaultTxDTOtoVaultTx(
-  dto: VaultTransactionDTO
-): VaultTransaction {
+export function vaultTxDTOtoVaultTx(dto: VaultTransactionDTO): VaultTransaction {
   if (!dto.id) dto.id = uuidv4();
 
   return <VaultTransaction>{

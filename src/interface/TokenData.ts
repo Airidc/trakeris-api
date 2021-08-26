@@ -1,3 +1,5 @@
+import { User } from "../entity";
+
 export interface TokenData {
   accessToken: string;
   accessExpiresIn: number;
@@ -12,4 +14,10 @@ export interface UserDataInToken {
   profilePic: string;
   firstName: string;
   lastName: string;
+}
+
+export interface RefreshTokenData {
+  user: User;
+  refreshToken: string;
+  refreshTokenExpiry: number;
 }

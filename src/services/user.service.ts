@@ -3,11 +3,7 @@ import { getConnection } from "typeorm";
 import { User } from "../entity/user.entity";
 import { UserFields } from "../enums/userFields.enum";
 
-export async function saveUser(
-  userData: any,
-  salt: string,
-  hashedPassword: string
-): Promise<User> {
+export async function createUser(userData: any, salt: string, hashedPassword: string): Promise<User> {
   const userRepo = getConnection().getRepository(User);
   const generatedId = uuid();
   const status = await userRepo.save({
@@ -26,10 +22,7 @@ export async function saveUser(
   return status;
 }
 
-export async function getUserBy(
-  fieldName: UserFields,
-  value: string
-): Promise<User | undefined> {
+export async function getUserBy(fieldName: UserFields, value: string): Promise<User | undefined> {
   const connection = getConnection();
   const searchCriteria = {
     where: {},
@@ -54,9 +47,7 @@ export async function getUserBy(
     }
   }
 
-  const user = await connection
-    .getRepository(User)
-    .findOneOrFail(searchCriteria);
+  const user = await connection.getRepository(User).findOneOrFail(searchCriteria);
 
   return user;
 }

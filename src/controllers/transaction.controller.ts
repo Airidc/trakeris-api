@@ -4,12 +4,14 @@ import { getConnection } from "typeorm";
 import { TransactionCategoryDTO, TransactionDTO } from "../interface/DTO";
 import { dtoService, transactionService } from "../services";
 import { BasicController } from "../interface";
+import * as authMiddleware from "../middleware/auth.middleware";
 
 export default class TransactionController implements BasicController {
   public path = "/transaction";
   public router = express.Router();
 
   constructor() {
+    this.router.use(authMiddleware.verifyUser);
     this.initializeRoutes();
   }
 
@@ -27,18 +29,12 @@ export default class TransactionController implements BasicController {
   ) => {
     const transactionCategoryDTO = <TransactionCategoryDTO>request.body;
 
-    const tc = await transactionService.saveTransactionCategory(
-      transactionCategoryDTO
-    );
+    const tc = await transactionService.saveTransactionCategory(transactionCategoryDTO);
 
     return response.json({ ...dtoService.transactionCategoryToDTO(tc) });
   };
 
-  private addTransaction = async (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
+  private addTransaction = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const transactionDTO = <TransactionDTO>request.body;
 
     let transaction;
@@ -51,22 +47,14 @@ export default class TransactionController implements BasicController {
     return response.json({ ...dtoService.transactionToDTO(transaction) });
   };
 
-  private deleteTransaction = async (
-    request: express.Request,
-    response: express.Response
-  ) => {
+  private deleteTransaction = async (request: express.Request, response: express.Response) => {
     return response.json({ status: "delete successful" });
   };
 
-  private getTransactions = async (
-    request: express.Request,
-    response: express.Response
-  ) => {
+  private getTransactions = async (request: express.Request, response: express.Response) => {
     const rb = request.body;
     const connection = getConnection();
-    const trns = await connection
-      .getRepository(Transaction)
-      .find({ where: { user: rb.userId } });
+    const trns = await connection.getRepository(Transaction).find({ where: { user: rb.userId } });
     return response.json({ transactions: trns });
   };
 }
