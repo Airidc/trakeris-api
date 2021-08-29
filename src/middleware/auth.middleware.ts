@@ -5,7 +5,7 @@ import HttpException from "../exceptions/http.exception";
 import { userService } from "../services";
 
 export function verifyUser(req: express.Request, res: express.Response, next: express.NextFunction) {
-  let token = req.headers.authorization;
+  let token = req.cookies["Authorization"]?.replace("Bearer ", "") || "";
   if (!token) return next(new HttpException(401, "Access Denied / Unauthorized request"));
 
   try {

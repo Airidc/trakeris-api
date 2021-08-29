@@ -53,15 +53,28 @@ export function createCookie(tokenData: TokenData): string {
   return `Authorization=Bearer ${tokenData.accessToken};`;
 }
 
-export async function validateRefreshToken(refreshData: RefreshTokenData): Promise<User> {
-  let user = await userService.getUserBy(UserFields.Username, refreshData.user.username);
+export async function validateRefreshToken(refreshData: RefreshTokenData, accessToken: string): Promise<any> {
+  try {
+    // Throws error if jwt is expired
+    jwt.verify(accessToken, process.env.JWT_SECRET as string);
+    throw new HttpException(200, "Current access token is still valid");
+  } catch (error: any | jwt.JsonWebTokenError) {
+    if (!(error instanceof jwt.TokenExpiredError)) throw error;
 
-  if (!user) throw new HttpException(500, "Could not refresh the access token. Please sign-in again.");
+    // If reached, token is expired and needs renewing.
+    const jwtDecoded = jwt.decode(accessToken) as User;
+    if (!jwtDecoded) throw new HttpException(400, "Access token to be refreshed is invalid");
 
-  if (user.refreshToken !== refreshData.refreshToken) throw new HttpException(400, "Invalid refresh token");
+    let user = await userService.getUserBy(UserFields.Username, jwtDecoded.username);
+    if (!user) throw new HttpException(500, "Could not refresh the access token. Please sign-in again.");
 
-  if (user.refreshTokenExpiry < refreshData.refreshTokenExpiry)
-    throw new HttpException(400, "Refresh token expired, please log in again.");
+    if (user.refreshToken !== refreshData.refreshToken) {
+      throw new HttpException(400, "Invalid refresh token");
+    }
 
-  return user;
+    if (user.refreshTokenExpiry < refreshData.refreshTokenExpiry)
+      throw new HttpException(400, "Refresh token expired, please log in again.");
+
+    return user;
+  }
 }

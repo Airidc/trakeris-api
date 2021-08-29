@@ -17,7 +17,6 @@ export interface UserDataInToken {
 }
 
 export interface RefreshTokenData {
-  user: User;
   refreshToken: string;
   refreshTokenExpiry: number;
 }

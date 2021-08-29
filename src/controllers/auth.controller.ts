@@ -62,11 +62,21 @@ export default class AuthenticationController implements BasicController {
     response.json({ status: "ok" });
   };
 
-  private refreshAccessToken = async (request: express.Request, response: express.Response) => {
-    const postBodyData: RefreshTokenData = request.body;
-    let user = await authService.validateRefreshToken(postBodyData);
-    const tokenData = await authService.createToken(user);
-    response.setHeader("Set-Cookie", [authService.createCookie(tokenData)]);
-    return response.json({ status: "ok" });
+  private refreshAccessToken = async (
+    request: express.Request,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const refreshTokenData: RefreshTokenData = request.body;
+      const accessToken: string = request.cookies["Authorization"]?.replace("Bearer ", "") || "";
+
+      let user = await authService.validateRefreshToken(refreshTokenData, accessToken);
+      const tokenData = await authService.createToken(user);
+      response.setHeader("Set-Cookie", [authService.createCookie(tokenData)]);
+      return response.json({ status: "ok" });
+    } catch (error) {
+      next(error);
+    }
   };
 }
