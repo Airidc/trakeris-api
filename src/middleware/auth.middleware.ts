@@ -9,10 +9,6 @@ export function verifyUser(req: express.Request, res: express.Response, next: ex
   if (!token) return next(new HttpException(401, "Access Denied / Unauthorized request"));
 
   try {
-    token = token.split(" ")[1];
-
-    if (token === "null" || !token) return next(new HttpException(401, "Unauthorized request"));
-
     let verifiedUser = jwt.verify(token, process.env.JWT_SECRET as string); // config.TOKEN_SECRET => 'secretKey'
     if (!verifiedUser) return next(new HttpException(400, "Unauthorized request"));
 

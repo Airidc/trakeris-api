@@ -36,13 +36,7 @@ export default class App {
         extra: {
           decimalNumbers: true,
         },
-        entities: [
-          User,
-          TransactionCategory,
-          Transaction,
-          Vault,
-          VaultTransaction,
-        ],
+        entities: [User, TransactionCategory, Transaction, Vault, VaultTransaction],
         port: 3306,
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASS,

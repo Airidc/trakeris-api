@@ -55,6 +55,7 @@ export default class TransactionController implements BasicController {
     const rb = request.body;
     const connection = getConnection();
     const trns = await connection.getRepository(Transaction).find({ where: { user: rb.userId } });
+    response.setHeader("Access-Control-Allow-Origin", "*");
     return response.json({ transactions: trns });
   };
 }

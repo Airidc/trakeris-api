@@ -50,7 +50,7 @@ export function createRefreshToken() {
 }
 
 export function createCookie(tokenData: TokenData): string {
-  return `Authorization=Bearer ${tokenData.accessToken};`;
+  return `Authorization=Bearer ${tokenData.accessToken};HttpOnly; Max-Age=${tokenData.accessExpiresIn}; Path=/`;
 }
 
 export async function validateRefreshToken(refreshData: RefreshTokenData, accessToken: string): Promise<any> {
