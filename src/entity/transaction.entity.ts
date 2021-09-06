@@ -19,7 +19,7 @@ export class Transaction {
   @Column()
   label!: string;
 
-  @ManyToOne((_type) => TransactionCategory, (tc: TransactionCategory) => tc.id)
+  @ManyToOne((_type) => TransactionCategory, (tc: TransactionCategory) => tc.id, { eager: true })
   @JoinColumn()
   category!: TransactionCategory;
 

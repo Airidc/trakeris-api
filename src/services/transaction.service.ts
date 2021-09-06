@@ -5,18 +5,14 @@ import { TransactionCategory } from "../entity/transactionCategory.entity";
 import { User } from "../entity/user.entity";
 import { TransactionCategoryDTO, TransactionDTO } from "../interface/DTO";
 
-export async function saveTransaction(
-  transactionDto: TransactionDTO
-): Promise<Transaction> {
+export async function saveTransaction(transactionDto: TransactionDTO): Promise<Transaction> {
   const connection = getConnection();
   const user = new User();
   user.id = transactionDto.userId;
 
   let tc;
   try {
-    tc = await connection
-      .getRepository(TransactionCategory)
-      .findOneOrFail(transactionDto.categoryId);
+    tc = await connection.getRepository(TransactionCategory).findOneOrFail(transactionDto.categoryId);
   } catch (error) {
     throw Error("Invalid Transaction category ID");
   }
@@ -33,7 +29,8 @@ export async function saveTransaction(
   };
 
   //await transactionService.saveTransaction(transaction);
-  return await connection.getRepository(Transaction).save(transaction);
+  await connection.getRepository(Transaction).save(transaction);
+  return transaction;
 }
 
 export async function saveTransactionCategory(
@@ -43,9 +40,7 @@ export async function saveTransactionCategory(
 
   let user: User;
   try {
-    user = await connection
-      .getRepository(User)
-      .findOneOrFail(transactionCategoryDTO.userId);
+    user = await connection.getRepository(User).findOneOrFail(transactionCategoryDTO.userId);
   } catch (error) {
     throw Error("User not found for transaction category.");
   }
@@ -57,7 +52,5 @@ export async function saveTransactionCategory(
     user: user,
   };
 
-  return await connection
-    .getRepository(TransactionCategory)
-    .save(transactionCategory);
+  return await connection.getRepository(TransactionCategory).save(transactionCategory);
 }
