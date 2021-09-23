@@ -5,22 +5,36 @@ import { TransactionCategoryDTO, TransactionDTO } from "../interface/DTO";
 import { dtoService, transactionService } from "../services";
 import { BasicController } from "../interface";
 import * as authMiddleware from "../middleware/auth.middleware";
+import { GroupByType } from "../enums/groupBy";
 
 export default class TransactionController implements BasicController {
   public path = "/transaction";
   public router = express.Router();
 
   constructor() {
-    this.router.use(authMiddleware.verifyUser);
+    //this.router.use(authMiddleware.verifyUser);
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
+    this.router.post(`${this.path}/getGrouped`, this.getGroupedTransactions);
     this.router.post(`${this.path}/add`, this.addTransaction);
     this.router.delete(`${this.path}/delete`, this.deleteTransaction);
     this.router.post(`${this.path}/getAll`, this.getTransactions);
     this.router.post(`${this.path}/category/add`, this.addTransactionCategory);
   }
+
+  private getGroupedTransactions = async (
+    request: express.Request,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    const userId = <string>request.body.userId;
+
+    const transactions = await transactionService.getAllTransactions(userId);
+    const grouped = transactionService.groupByMonth(transactions);
+    return response.json({ groupedData: grouped });
+  };
 
   private addTransactionCategory = async (
     request: express.Request,

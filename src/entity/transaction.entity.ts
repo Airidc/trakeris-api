@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
+import { ColumnNumericTransformer } from "../utilities/converters";
 import { TransactionCategory } from "./transactionCategory.entity";
 import { User } from "./user.entity";
 
@@ -10,7 +11,11 @@ export class Transaction {
   @Column()
   createdAt!: string;
 
-  @Column()
+  @Column("numeric", {
+    precision: 7,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   amount!: number;
 
   @Column()
